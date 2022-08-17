@@ -3,10 +3,9 @@ package com.outoftheboxrobotics.roadrunnerdsl
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
-import com.outoftheboxrobotics.roadrunnerdsl.routines.AutonomousRoutine
-import com.outoftheboxrobotics.roadrunnerdsl.routines.BlankMotionRoutine
-import com.outoftheboxrobotics.roadrunnerdsl.routines.MotionRoutine
-import com.outoftheboxrobotics.roadrunnerdsl.routines.TrajectoryWrapper
+import com.outoftheboxrobotics.roadrunnerdsl.routines.*
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 class AutonomousBuilder(
@@ -28,15 +27,24 @@ class AutonomousBuilder(
     }
 
     fun task(block: () -> Unit) {
-        routines.add {
-            block()
-        }
+        routines.add(block)
     }
 
+    fun asyncTask(block: suspend () -> Unit) {
+        routines.add(AsyncTask(block))
+    }
 
+    fun asyncScope(block: AutonomousBuilder.() -> Unit) {
+        routines.add(AutonomousBuilder(getTrajectoryBuilder, runTrajectory, defaultPose).apply(block))
+    }
 
     override suspend fun runTask() {
-        routines.forEach { it.runTask() }
+        coroutineScope {
+            routines.forEach {
+                if (it is AsyncTask) launch { it.runTask() }
+                else it.runTask()
+            }
+        }
     }
 
     fun run() = runBlocking {

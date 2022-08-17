@@ -10,11 +10,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 internal class AutonomousBuilderTest {
-    private fun autonomousBuilder(block: AutonomousBuilder.() -> Unit) = AutonomousBuilder(
-        getTrajectoryBuilder = { TrajectoryBuilder(it, false, { _, _, _, _ -> 30.0 }, { _, _, _, _ -> 30.0 }) },
-        runTrajectory = {}
-    ).apply(block)
-
     @Test
     fun pathContinuityExceptionTest() {
         autonomousBuilder {
@@ -67,5 +62,12 @@ internal class AutonomousBuilderTest {
         }.run()
 
         assertEquals("ab", s)
+    }
+
+    companion object {
+        internal fun autonomousBuilder(block: AutonomousBuilder.() -> Unit) = AutonomousBuilder(
+            getTrajectoryBuilder = { TrajectoryBuilder(it, false, { _, _, _, _ -> 30.0 }, { _, _, _, _ -> 30.0 }) },
+            runTrajectory = {}
+        ).apply(block)
     }
 }
