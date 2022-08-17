@@ -43,7 +43,8 @@ internal class AutonomousBuilderTest {
     @Test
     fun endPoseTest() {
         val p1 = autonomousBuilder {
-            trajectory { splineToLinearHeading(Pose2d(15.0, -2.0, PI), 0.0) }
+            trajectory { splineToLinearHeading(Pose2d(15.0, -2.0, PI / 2), 0.0) }
+            addPose(Pose2d(0.0, 0.0, PI / 2))
             trajectory { strafeLeft(8.0) }
         }.endPose
 
