@@ -17,6 +17,7 @@ dependencies {
     testImplementation(kotlin("test"))
 
     implementation("com.acmerobotics.roadrunner:core:0.5.5")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 }
 
 tasks.test {

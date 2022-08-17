@@ -52,6 +52,19 @@ internal class AutonomousBuilderTest {
         }.endPose
 
         // data class .equals() is not working for some reason
-        assertEquals(p1.toString(), p2.toString())
+        assertEquals("$p1", "$p2")
+    }
+
+    @Test
+    fun taskTest() {
+        var s = ""
+
+        autonomousBuilder {
+            task { s += "a" }
+            trajectory { strafeRight(6.0) }
+            task { s += "b" }
+        }.run()
+
+        assertEquals("ab", s)
     }
 }
