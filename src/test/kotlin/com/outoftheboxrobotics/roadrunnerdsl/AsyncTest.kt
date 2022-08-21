@@ -1,7 +1,6 @@
 package com.outoftheboxrobotics.roadrunnerdsl
 
 import com.outoftheboxrobotics.roadrunnerdsl.AutonomousBuilderTest.Companion.autonomousBuilder
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -15,18 +14,14 @@ internal class AsyncTest {
             task { s += "1" }
 
             asyncTask {
-                coroutineScope {
-                    delay(20L)
-                    s += "3"
-                }
+                delay(20)
+                s += "3"
             }
 
             asyncScope {
                 asyncTask {
-                    coroutineScope {
-                        delay(50L)
-                        s += "4"
-                    }
+                    delay(50)
+                    s += "4"
                 }
 
                 task { s += "2" }
@@ -36,5 +31,26 @@ internal class AsyncTest {
         }.run()
 
         assertEquals("12345", s)
+    }
+
+    @Test
+    fun delayAwaitTest() {
+        var s = ""
+
+        autonomousBuilder {
+            val a = asyncTask {
+                delay(100)
+                s += "2"
+            }
+            wait(50)
+            asyncTask {
+                delay(20)
+                s += "1"
+            }
+            awaitTask(a)
+            task { s += "3" }
+        }.run()
+
+        assertEquals("123", s)
     }
 }
