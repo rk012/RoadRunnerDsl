@@ -2,6 +2,7 @@ package com.outoftheboxrobotics.roadrunnerdsl
 
 import com.outoftheboxrobotics.roadrunnerdsl.AutonomousBuilderTest.Companion.autonomousBuilder
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -11,7 +12,12 @@ internal class AsyncTest {
         var s = ""
 
         autonomousBuilder {
-            task { s += "1" }
+            task {
+                launch {
+                    delay(20)
+                    s += "1"
+                }
+            }
 
             asyncTask {
                 delay(20)

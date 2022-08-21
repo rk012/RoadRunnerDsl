@@ -53,7 +53,7 @@ class AutonomousBuilder(
         coroutineScope {
             routines.forEach {
                 if (it is AsyncTask) with(it) { launchTask() }
-                else with(it) { runTask() }
+                else coroutineScope { with(it) { runTask() } }
             }
         }
     }
