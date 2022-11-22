@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.7.10"
+    kotlin("jvm") version "1.7.20"
 }
 
 group = "io.github.rk012"
@@ -16,8 +16,8 @@ repositories {
 dependencies {
     testImplementation(kotlin("test"))
 
-    implementation("com.acmerobotics.roadrunner:core:0.5.5")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    api("com.acmerobotics.roadrunner:core:0.5.6")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 }
 
 tasks.test {

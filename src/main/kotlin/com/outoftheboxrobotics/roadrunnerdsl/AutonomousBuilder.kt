@@ -3,6 +3,7 @@ package com.outoftheboxrobotics.roadrunnerdsl
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
+import com.outoftheboxrobotics.roadrunnerdsl.builders.LoopTrajectoryBuilder
 import com.outoftheboxrobotics.roadrunnerdsl.routines.*
 import kotlinx.coroutines.*
 
@@ -15,6 +16,8 @@ class AutonomousBuilder(
 
     override val endPose
         get() = routines.filterIsInstance<MotionRoutine>().lastOrNull()?.endPose ?: defaultPose
+
+    private fun createSubroutine() = AutonomousBuilder(getTrajectoryBuilder, runTrajectory, endPose)
 
     fun trajectory(block: TrajectoryBuilder.() -> Unit) {
         routines.add(TrajectoryWrapper(getTrajectoryBuilder(endPose).apply(block).build(), runTrajectory))
@@ -46,15 +49,17 @@ class AutonomousBuilder(
     }
 
     fun asyncScope(block: AutonomousBuilder.() -> Unit) {
-        routines.add(AutonomousBuilder(getTrajectoryBuilder, runTrajectory, defaultPose).apply(block))
+        routines.add(createSubroutine().apply(block))
     }
 
-    override suspend fun CoroutineScope.runTask() {
-        coroutineScope {
-            routines.forEach {
-                if (it is AsyncTask) with(it) { launchTask() }
-                else coroutineScope { with(it) { runTask() } }
-            }
+    fun loopTrajectory(block: LoopTrajectoryBuilder.() -> Unit) {
+        routines.add(LoopTrajectoryBuilder(createSubroutine()).apply(block).motionRoutine)
+    }
+
+    override suspend fun CoroutineScope.runTask() = coroutineScope {
+        routines.forEach {
+            if (it is AsyncTask) with(it) { launchTask() }
+            else coroutineScope { with(it) { runTask() } }
         }
     }
 
