@@ -3,6 +3,7 @@ package com.outoftheboxrobotics.roadrunnerdsl
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
+import com.outoftheboxrobotics.roadrunnerdsl.builders.ConditionalTrajectoryBuilder
 import com.outoftheboxrobotics.roadrunnerdsl.builders.LoopTrajectoryBuilder
 import com.outoftheboxrobotics.roadrunnerdsl.routines.*
 import kotlinx.coroutines.*
@@ -70,6 +71,10 @@ class AutonomousBuilder(
 
     fun loopTrajectory(block: LoopTrajectoryBuilder.() -> Unit) {
         routines.add(LoopTrajectoryBuilder(createSubroutine()).apply(block).motionRoutine)
+    }
+
+    fun conditionalTrajectory(block: ConditionalTrajectoryBuilder.() -> Unit) {
+        routines.add(ConditionalTrajectoryBuilder(::createSubroutine).apply(block).motionRoutine)
     }
 
     override suspend fun CoroutineScope.runTask() = coroutineScope {
