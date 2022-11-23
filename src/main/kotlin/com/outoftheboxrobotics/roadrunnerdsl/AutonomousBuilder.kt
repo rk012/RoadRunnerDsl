@@ -7,6 +7,7 @@ import com.outoftheboxrobotics.roadrunnerdsl.builders.LoopTrajectoryBuilder
 import com.outoftheboxrobotics.roadrunnerdsl.routines.*
 import kotlinx.coroutines.*
 
+@RoadrunnerDslMarker
 class AutonomousBuilder(
     private val getTrajectoryBuilder: (Pose2d) -> TrajectoryBuilder,
     private val runTrajectory: (Trajectory) -> Unit,
@@ -15,16 +16,31 @@ class AutonomousBuilder(
     private val routines = mutableListOf<AutonomousRoutine>()
 
     override val endPose
-        get() = routines.filterIsInstance<MotionRoutine>().lastOrNull()?.endPose ?: defaultPose
+        get() = routines.filterIsInstance<MotionRoutine>().let {
+            if (it.isEmpty()) defaultPose
+            else it.last().endPose
+        }
 
-    private fun createSubroutine() = AutonomousBuilder(getTrajectoryBuilder, runTrajectory, endPose)
+    private fun createSubroutine() = AutonomousBuilder(
+        getTrajectoryBuilder,
+        runTrajectory,
+        requireNotNull(endPose) { "Continuation of autonomous builder after split conditional trajectory" }
+    )
 
     fun trajectory(block: TrajectoryBuilder.() -> Unit) {
-        routines.add(TrajectoryWrapper(getTrajectoryBuilder(endPose).apply(block).build(), runTrajectory))
+        routines.add(TrajectoryWrapper(
+            getTrajectoryBuilder(
+                requireNotNull(endPose) { "Continuation of autonomous builder after split conditional trajectory" }
+            ).apply(block).build(),
+            runTrajectory
+        ))
     }
 
     fun addPose(pose: Pose2d) {
-        routines.add(BlankMotionRoutine(endPose + pose))
+        routines.add(BlankMotionRoutine(
+            requireNotNull(endPose) { "Continuation of autonomous builder after split conditional trajectory" }
+                    + pose
+        ))
     }
 
     fun task(block: suspend CoroutineScope.() -> Unit) {

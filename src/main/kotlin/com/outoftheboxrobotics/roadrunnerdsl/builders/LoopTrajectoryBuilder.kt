@@ -1,10 +1,12 @@
 package com.outoftheboxrobotics.roadrunnerdsl.builders
 
 import com.outoftheboxrobotics.roadrunnerdsl.AutonomousBuilder
+import com.outoftheboxrobotics.roadrunnerdsl.RoadrunnerDslMarker
 import com.outoftheboxrobotics.roadrunnerdsl.routines.MotionRoutine
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 
+@RoadrunnerDslMarker
 class LoopTrajectoryBuilder internal constructor(private val builder: AutonomousBuilder) {
     private var condition: (() -> Boolean)? = null
     private var loopBody: AutonomousBuilder.() -> Unit = {}
