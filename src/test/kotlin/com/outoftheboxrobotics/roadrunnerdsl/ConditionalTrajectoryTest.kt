@@ -8,7 +8,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-class ConditionalTrajectoryTest {
+internal class ConditionalTrajectoryTest {
     @Test
     fun conditionalTest() {
         val expected = "qwertyuiopasdfghjklzxcvbnm".toCharArray()
