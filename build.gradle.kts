@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "io.github.rk012"
-version = "0.1"
+version = "0.2"
 
 repositories {
     mavenCentral()
@@ -17,7 +17,7 @@ dependencies {
     testImplementation(kotlin("test"))
 
     implementation("com.acmerobotics.roadrunner:core:0.5.6")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
 }
 
 tasks.test {
